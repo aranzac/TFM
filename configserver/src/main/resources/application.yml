@@ -1,8 +1,11 @@
+server:  port: 8888
+
 spring:
   application:
     name: config-server
+    
   cloud:
     config:
       server:
         git:
-          uri: https://github.com/aranzac/spring-cloud-repo
+          uri: https://github.com/aranzac/spring-cloud-repo            profiles:    active:    - dev
