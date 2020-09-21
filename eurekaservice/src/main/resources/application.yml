@@ -1,10 +1,11 @@
 spring:
   application:
     name: eureka-service
+  security:
+    user:
+      name: admin
+      password: s3cr3t
 
-#server:
-#  port: 8302
-  
 server:
   port: 8761
 
@@ -12,5 +13,6 @@ eureka:
   client:
     registerWithEureka: false
     fetchRegistry: false
-    server:
-      waitTimeInMsWhenSyncEmpty: 0
+    service-url:
+      defaultZone: http://admin:s3cr3t@localhost:8761/eureka/
+
