@@ -1,11 +1,11 @@
 package es.uv.tfm.userservice.entities;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,37 +14,44 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.Builder;
+import lombok.Data;
 
 @Entity
+@Builder
+@Data
 @Table(name = "users")
 public class User {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name= "id")
 	private int id;
 	
-	@Column(name= "username")
+	@Column(name= "username", unique= true)
 	private String username;
 	
 	@Column(name= "password")
 	private String password;
 	
-	@Column(name= "email")
+	@Column(name= "email", unique= true)
 	private String email;
 	
 	@Column(name= "state")
 	private String state;
 
-	@ManyToMany(fetch = FetchType.LAZY ,cascade = {CascadeType.ALL})
-	@JoinTable(name = "users_has_roles", joinColumns = @JoinColumn(name = "users_id"), inverseJoinColumns = @JoinColumn(name = "roles_id"))
-	private Set<Role> roles;
+	@ManyToMany(cascade = CascadeType.MERGE)
+	//@JoinTable(name = "users_has_roles", joinColumns = @JoinColumn(name = "users_id"), inverseJoinColumns = @JoinColumn(name = "roles_id"))
+	@JoinTable(name = "users_has_roles", joinColumns = {@JoinColumn(name="USERS_ID", referencedColumnName = "ID")}, inverseJoinColumns= {@JoinColumn(name="ROLES_ID", referencedColumnName="ID")})
+	private List<Role> roles;
 	
 	
 	public User() {
 		super();
+		this.roles = new ArrayList<Role>();
 	}
+	
+	
 	
 	public User(int id, String username, String password, String email, String state) {
 		super();
@@ -53,10 +60,8 @@ public class User {
 		this.password = password;
 		this.email = email;
 		this.state = state;
-
+		this.roles = new ArrayList<Role>();
 	}
-	
-	
 
 	public int getId() {
 		return id;
@@ -98,16 +103,28 @@ public class User {
 		this.state = state;
 	}
 
-	public Set<Role> getRoles() {
+	public List<Role> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(Set<Role> roles) {
+	public void setRoles(List<Role> roles) {
 		this.roles = roles;
 	}
 	
 	public void addRole(Role role) {
 		this.roles.add(role);
+	}
+
+
+
+	public User(int id, String username, String password, String email, String state, List<Role> roles) {
+		super();
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.state = state;
+		this.roles = roles;
 	}
 
 

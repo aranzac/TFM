@@ -1,23 +1,21 @@
 package es.uv.tfm.userservice.entities;
 
-import java.util.Set;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 
 @Entity
 @Table(name = "roles")
+@AllArgsConstructor @NoArgsConstructor
+@Builder
 public class Role {
 
 	@Id
@@ -25,24 +23,16 @@ public class Role {
 	@Column(name= "id") 
 	private int id;
 	
-	@Column(name= "name")
+	@Column(name= "name", unique= true)
 	private String name;
 	
-	@JsonIgnore
-	@ManyToMany(fetch = FetchType.LAZY ,cascade = {CascadeType.ALL})
-	@JoinTable(name = "users_has_roles", joinColumns = @JoinColumn(name = "roles_id"), inverseJoinColumns = @JoinColumn(name = "users_id"))
-	private Set<User> users;
-	
-	
-	public Role() {
-		super();
-	}
+//	@JsonIgnore
+//	@ManyToMany(cascade = {CascadeType.MERGE})
+//	@JoinTable(name = "users_has_roles", joinColumns = @JoinColumn(name = "roles_id"), inverseJoinColumns = @JoinColumn(name = "users_id"))
+//	//@ManyToMany(mappedBy="roles")
+//	private List<User> users;
 
-	public Role( String name, Set<User> users) {
-		super();
-		this.name = name;
-		this.users = users;
-	}
+
 
 	public int getId() {
 		return id;
@@ -60,16 +50,17 @@ public class Role {
 		this.name = name;
 	}
 
-	public Set<User> getUsers() {
-		return users;
-	}
 
-	public void setUsers(Set<User> users) {
-		this.users = users;
-	}
-	
-	public void addUser(User user) {
-		this.users.add(user);
-	}
+//	public List<User> getUsers() {
+//		return users;
+//	}
+//
+//	public void setUsers(List<User> users) {
+//		this.users = users;
+//	}
+//	
+//	public void addUser(User user) {
+//		this.users.add(user);
+//	}
 	
 }

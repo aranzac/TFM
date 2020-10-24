@@ -3,6 +3,7 @@ package es.uv.tfm.userservice.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,18 +33,42 @@ public class RoleController {
 	@Autowired
 	UserService userService;
 	
-	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@GetMapping("/")
+	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<Object> getAll(){
 		return new ResponseEntity<>(roleService.getRoles(),HttpStatus.OK);
 	}
 	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@ResponseStatus(HttpStatus.OK)
+	@GetMapping("/{id}")
+	public Role getRole(@PathVariable("id") int id) {
+		try {
+			return roleService.findById(id);
+		} catch(ResourceNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+	} 
+	
+	@ResponseStatus(HttpStatus.OK)
+	@GetMapping("/name/{name}")
+	public Role getRoleByName(@PathVariable("name") String name) {
+		try {
+			return roleService.findByName(name);
+		} catch(ResourceNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+	} 
+
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping("/")
 	public  Role createRole(@RequestBody Role role) {
 		return  roleService.createRole(role);
 	}
 	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PutMapping("/{id}")
 	public  ResponseEntity<Object> addRole(@PathVariable("id") int id, @RequestParam("name") String name) {
@@ -58,27 +83,15 @@ public class RoleController {
 		}
 	}
 	
-	
-	@ResponseStatus(HttpStatus.OK)
-	@GetMapping("/{id}")
-	public Role getRole(@PathVariable("id") int id) {
-		try {
-			return roleService.findById(id);
-		} catch(ResourceNotFoundException ex) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-		}
-	} 
-	
-	
+
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Object> deleteRole(@PathVariable("id") int id) {
-		
 		try {
 			return new ResponseEntity<Object>(roleService.deleteRole(id), HttpStatus.NO_CONTENT);
 		} catch (ResourceNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
 		}
 	}
-	
 }

@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import es.uv.tfm.userservice.entities.Role;
@@ -19,63 +20,80 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	RoleRepository roleRepository;
 
 	@Override
+	public List<User> getUsers() {
+		return userRepository.findAll();
+	}
+
+	@Override
+    @Secured ({"ROLE_USER", "ROLE_ADMIN"})
+	public User findById(int id) {
+		return userRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("No user found with id " + id));
+	}
+
+	@Override
+    @Secured ({"ROLE_USER", "ROLE_ADMIN"})
+	public User findByUsername(String username) {
+		return userRepository.findByUsername(username)
+				.orElseThrow(() -> new ResourceNotFoundException("No user found with Username " + username));
+	}
+
+	@Override
+    @Secured ({"ROLE_USER", "ROLE_ADMIN"})
+	public User findByEmail(String email) {
+		return userRepository.findByEmail(email)
+				.orElseThrow(() -> new ResourceNotFoundException("No user found with Email " + email));
+	}
+
+	@Override
 	public User createUser(User user) {
-		
-		if(userRepository.findByUsername(user.getUsername()).isPresent() || userRepository.findByEmail(user.getEmail()).isPresent() )
+
+		if (userRepository.findByUsername(user.getUsername()).isPresent()
+				|| userRepository.findByEmail(user.getEmail()).isPresent())
 			throw new UserExistsException("User already exists");
-			
-		Optional<Role> role = roleRepository.findByName("USER");
-		
-		if(!role.isPresent())
+
+		Optional<Role> role = roleRepository.findByName("ROLE_USER");
+
+		if (!role.isPresent())
 			throw new ResourceNotFoundException("Role not found");
-		
+
 		user.addRole(role.get());
-		
+
 		return userRepository.save(user);
 	}
 
 	@Override
+    @Secured ({"ROLE_USER", "ROLE_ADMIN"})
 	public User updateUser(int id, User user) {
-		
+
 		userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No user found with id " + id));
-		
+
 		user.setId(id);
 
 		return userRepository.save(user);
 	}
 
 	@Override
-	public Boolean deleteUser(int id) {
-		try {
-			userRepository.deleteById(id);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
+    @Secured ({"ROLE_USER", "ROLE_ADMIN"})
+	public void deleteUser(int id) {
+
+		userRepository.deleteById(id);
+
+		System.out.println("aqi");
+//		try {
+//			userRepository.deleteById(id);
+//
+//		}
+//		catch(Exception ex){
+//			System.out.println("eyy" + ex);
+//		}
+		// userRepository.deleteById(id).orElseThrow(() -> new
+		// ResourceNotFoundException("No user found with id " + id));
 	}
 
-	@Override
-	public List<User> getUsers() {
-		return userRepository.findAll();
-	}
-	
-	@Override
-	public User findById(int id) {
-		return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No user found with id " + id));
-	}
-
-	@Override
-	public User findByUsername(String username) {
-		return userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("No user found with Username " + username));
-	}
-
-	@Override
-	public User findByEmail(String email) {
-		return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("No user found with Email " + email));
-	}
 }
