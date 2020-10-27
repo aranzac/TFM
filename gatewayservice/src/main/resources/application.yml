@@ -8,9 +8,12 @@ spring:
     gateway:
       routes:
       - id: pruebaModule
-        uri: http://localhost:8081/
+        uri: http://localhost:8085/
         predicates:
         - Path=/prueba/**
+      - id: userService
+        uri: http://localhost:8081/
+        predicates:        - Path=/account/**
 
 
 eureka:

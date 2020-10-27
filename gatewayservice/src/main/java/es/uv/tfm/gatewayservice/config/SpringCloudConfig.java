@@ -11,11 +11,14 @@ public class SpringCloudConfig {
     @Bean
     public RouteLocator gatewayRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route(r -> r.path("/prueba/**")
+                .route(r -> r.path("/account/**")
                         .uri("http://localhost:8081/")
-                        .id("pruebaModule"))
+                        .id("userService"))
+                .route(r -> r.path("/roles/**").uri("http://localhost:8081/"))
+                .route(r -> r.path("/hello/**").uri("http://localhost:8081/"))
 
-                .build();
+                .build()
+                ;
     }
 
 }
