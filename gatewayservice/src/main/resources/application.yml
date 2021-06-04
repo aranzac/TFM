@@ -1,8 +1,8 @@
 server:
   port: 8080
 
-springdoc:
-  packagesToScan: es.uv.tfm.gatewayservice
+#springdoc:
+#  packagesToScan: es.uv.tfm.gatewayservice
   
 spring:
   application:
@@ -10,6 +10,9 @@ spring:
     
   cloud:
     gateway:
+      discovery:
+        locator:
+          enabled: true
       globalcors:
         corsConfigurations:
           '[/**]':
@@ -20,21 +23,14 @@ spring:
               - GET
               - POST
       routes:
-      - id: userService
+      - id: userservice
         uri: http://localhost:8081/
         predicates:        - Path=/account/**, /auth/**
       - id: graphservice
         uri: http://localhost:8082/
         predicates:
         - Path=/graph/**
-        filters:
-        - RewritePath=/graph/(?<path>.*), /$\{path}
-      - id: openapi
-        uri: http://localhost:${server.port}
-        predicates:
-        - Path=/v3/api-docs/**
-        filters:
-        - RewritePath=/v3/api-docs/(?<path>.*), /$\{path}/v3/api-docs
+
            
 eureka:
   client:

@@ -73,6 +73,7 @@ public class AuthController {
 
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
 		} catch (AuthenticationException ex) {
+			System.out.println("ERROR 5");
 			System.out.println(ex);
 
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ex.getMessage());
@@ -81,7 +82,6 @@ public class AuthController {
 			System.out.println(ex);
 
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ex.getMessage());
-
 		}
 
 		return ResponseEntity.ok(

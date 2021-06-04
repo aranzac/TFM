@@ -1,0 +1,30 @@
+  
+version: '2.1'
+services:
+    config:
+        build: configserver
+        image: config
+        container_name: configserver
+        restart: always
+        ports:
+            - 8888:8888
+
+    registry:
+        build: eurekaservice
+        image: eureka
+        container_name: eurekaservice
+        restart: always
+        ports:
+          - 8761:8761
+
+    gateway:
+        build: gatewayservice
+        image: gateway
+        container_name: gatewayservice
+        restart: always
+        depends_on:
+            - config
+        ports:
+            - 8080:8080
+    
+        
