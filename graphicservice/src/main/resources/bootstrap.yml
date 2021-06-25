@@ -1,0 +1,19 @@
+
+server:
+  port: 8082 
+  
+spring:
+  application:
+    name: graphservice
+  security:
+     user:
+       name: admin
+       password: s3cr3t
+  cloud:
+    config:
+      uri: http://admin:s3cr3t@localhost:8888
+ 
+      
+springdoc:
+  packagesToScan: es.uv.tfm.graphservice
+  

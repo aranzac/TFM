@@ -1,0 +1,9 @@
+language: java
+jdk:
+  - openjdk8
+sudo: true
+dist: trusty
+
+script: ./mvnw clean install
+before_install:
+  - chmod +x mvnw
