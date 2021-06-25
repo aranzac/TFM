@@ -111,6 +111,8 @@ public class JwtFilter extends OncePerRequestFilter {
 		if ("OPTIONS".equalsIgnoreCase(httpServletRequest.getMethod())) {
 			httpServletResponse.setStatus(HttpServletResponse.SC_OK);
         }
+		System.out.println("########END OF FILTER########################");
+
 		filterChain.doFilter(httpServletRequest, httpServletResponse);
 	}
 }

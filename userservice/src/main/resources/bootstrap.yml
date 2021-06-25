@@ -1,9 +1,14 @@
+server:
+  port: 8081
+
 spring:
   application:
     name: userservice
+  security:
+     user:
+       name: admin
+       password: s3cr3t
   cloud:
     config:
-      uri: http://localhost:8888
-      username: admin
-      password: s3cr3t
+      uri: http://admin:s3cr3t@localhost:8888
  

@@ -2,14 +2,19 @@
 version: '2.1'
 services:
     config:
+        environment:
+            CONFIG_PASSWORD: $CONFIG_PASSWORD
         build: configserver
         image: config
         container_name: configserver
         restart: always
         ports:
             - 8888:8888
+            
 
     registry:
+        environment:
+            EUREKA_PASSWORD: $EUREKA_PASSWORD
         build: eurekaservice
         image: eureka
         container_name: eurekaservice
@@ -18,10 +23,14 @@ services:
           - 8761:8761
 
     gateway:
+        environment:
+            GATEWAY_PASSWORD: $GATEWAY_PASSWORD
         build: gatewayservice
         image: gateway
         container_name: gatewayservice
         restart: always
+        links:
+            - registry
         depends_on:
             - config
         ports:

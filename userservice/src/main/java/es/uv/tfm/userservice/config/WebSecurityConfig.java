@@ -58,7 +58,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-
 		auth.jdbcAuthentication().dataSource(dataSource)
 				.usersByUsernameQuery("SELECT username, password, enabled FROM users WHERE username=?")
 				.authoritiesByUsernameQuery("SELECT username, 'ROLE_USER' FROM users WHERE username=?");
@@ -81,13 +80,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		
 		httpSecurity.csrf().disable().headers().and()
 		.cors().and()
-				
 				.authorizeRequests()
 				.antMatchers("/auth/authenticate", "/account").permitAll()
 				.antMatchers("/resources/", "/webjars/", "/assets/").permitAll()
 				.antMatchers(HttpMethod.POST, "/account/").permitAll()
 				.antMatchers(HttpMethod.POST, "/auth/authenticate/").permitAll()
 				.antMatchers(HttpMethod.GET, "/roles/").permitAll()
+				.antMatchers(HttpMethod.GET, "/hellow/").permitAll()
 				.anyRequest().authenticated()
 				.and()
 				.httpBasic().disable()

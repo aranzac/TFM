@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gatewayservice
+  security:
+     user:
+       name: admin
+       password: s3cr3t
+  cloud:
+    config:
+      uri: http://admin:s3cr3t@localhost:8888
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - mappings
+          - env
+          - health
+          - info
