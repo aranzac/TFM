@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,12 +37,11 @@ public class RoleController {
 	@GetMapping("/")
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<Object> getAll(){
-			System.out.println("roole controller");		
-			return new ResponseEntity<>(roleService.getRoles(),HttpStatus.OK);
+		return new ResponseEntity<>(roleService.getRoles(),HttpStatus.OK);
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.FOUND)
 	@GetMapping("/{id}")
 	public Role getRole(@PathVariable("id") int id) {
 		try {
@@ -53,13 +51,10 @@ public class RoleController {
 		}
 	} 
 	
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.FOUND)
 	@GetMapping("/name/{name}")
 	public Role getRoleByName(@PathVariable("name") String name) {
 		try {
-			System.out.println("controller");
-			System.out.println(name);
-
 			return roleService.findByName(name);
 		} catch(ResourceNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -90,11 +85,11 @@ public class RoleController {
 	
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@ResponseStatus(HttpStatus.OK)
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Object> deleteRole(@PathVariable("id") int id) {
 		try {
-			return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<Object>(HttpStatus.OK);
 		} catch (ResourceNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
 		}
