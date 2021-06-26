@@ -48,7 +48,7 @@ public class AccountController {
 	}
 
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.FOUND)
 	@GetMapping("/{id}")
 	public User getAccountById(@PathVariable("id") int id) {
 
@@ -61,19 +61,18 @@ public class AccountController {
 
 	// Se comprueba que el usuario del token coincida con el usuario que se pide
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.FOUND)
 	@GetMapping("/user/{user}")
 	public User getAccountByUsername(HttpServletRequest httpServletRequest, @PathVariable("user") String user) {
-		
+
 		String jwt = httpServletRequest.getHeader("authorization");
+
 		String username = getUserFromToken(jwt);
-	
-		
-		System.out.println(httpServletRequest.getUserPrincipal().getName());
-		System.out.println(httpServletRequest.isUserInRole("ROLE_ADMIN"));
 		
 		if(httpServletRequest.isUserInRole("ROLE_ADMIN") || username.equals(user)) {
+
 			try {
+				
 				return userService.findByUsername(user);
 			}catch(ResourceNotFoundException ex) {
 
@@ -104,17 +103,11 @@ public class AccountController {
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping("/")
 	public User createUser(@RequestBody User user) {
-
+		
 		String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
 
 		user.setPassword(encodedPassword);
 		user.setState(true);
-
-		System.out.println(user.getId() + " " + user.getUsername() + " " + user.getEmail() + " " + user.getPassword()
-				+ " " + user.getState() + " " + user.getRoles().size());
-		user.getRoles().forEach((x) -> {
-			System.out.println("ROL: " + x.getName());
-		});
 
 		try {
 			return userService.createUser(user);
@@ -130,7 +123,6 @@ public class AccountController {
 
 		try {
 			User user = userService.findById(id);
-
 			if (user.getState())
 				user.setState(false);
 
@@ -146,26 +138,20 @@ public class AccountController {
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{id}")
-	public void deleteUser(HttpServletRequest httpServletRequest, @PathVariable("id") int id) {
+	public void deleteUserById(HttpServletRequest httpServletRequest, @PathVariable("id") int id) {
 
-		User user = userService.findById(id);
-		String userToken = getUserFromToken(httpServletRequest.getHeader("authorization"));
-
-		if (userToken.equals(user.getUsername())) {
-			userService.deleteUser(userService.findById(id));
+		try {
+			User user = userService.findById(id);
+			String userToken = getUserFromToken(httpServletRequest.getHeader("authorization"));
+			if (userToken.equals(user.getUsername())) {
+				userService.deleteUser(userService.findById(id));
+			}
+			else {
+				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Register used is same as token user");
+			}
+		} catch (ResourceNotFoundException ex) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found");
 		}
-		throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-				"El usuario requerido no coincide con el registrado");
-
-//		try {
-//			System.out.println("intentando");
-//			userService.deleteUser(id);
-//			 
-//		} catch (Exception ex) {
-//			System.out.println("catch");
-//
-//			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
-//		}
 	}
 
 	public String getUserFromToken(String header) {

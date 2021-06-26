@@ -44,9 +44,6 @@ import es.uv.tfm.userservice.services.RoleService;
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @SpringBootTest
-//
-//@WebMvcTest(controllers=RoleController.class)
-//@ContextConfiguration(classes={UserserviceApplication.class})
 public class RoleControllerTest {
 
 	private static final ObjectMapper mapper = new ObjectMapper();

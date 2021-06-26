@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import es.uv.tfm.userservice.entities.AuthRequest;
 import es.uv.tfm.userservice.entities.Role;
 import es.uv.tfm.userservice.exceptions.ResourceNotFoundException;
@@ -52,35 +54,31 @@ public class AuthController {
 	@Autowired
 	private CustomUserDetailsService userDetailsService;
 	
+	private static final ObjectMapper mapper = new ObjectMapper();
+
+
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(AuthenticationException.class)
 	@PostMapping("/authenticate")
-	public ResponseEntity<Object> login(HttpServletRequest httpServletRequest, @RequestBody AuthRequest authRequest) throws Exception {
+	public ResponseEntity<Object> login(HttpServletRequest httpServletRequest, @RequestBody AuthRequest authRequest)
+			throws Exception {
 		List<Role> roles;
 		try {
-			System.out.println(authRequest.getUsername() + " " + authRequest.getPassword());
-
-			authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-
+			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword());
+			authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+		    String json = mapper.writeValueAsString(authRequest);
+		    
 			roles = userService.findByUsername(authRequest.getUsername()).getRoles();
 
 		} catch (BadCredentialsException e) {
-
 			throw new Exception("Incorrect username or password", e);
-
 		} catch (ResourceNotFoundException ex) {
-
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
 		} catch (AuthenticationException ex) {
-			System.out.println("ERROR 5");
-			System.out.println(ex);
+			System.out.println("AuthenticationException 2");
 
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ex.getMessage());
 		} catch (Exception ex) {
-			System.out.println("erorr4");
-			System.out.println(ex);
-
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ex.getMessage());
 		}
 
