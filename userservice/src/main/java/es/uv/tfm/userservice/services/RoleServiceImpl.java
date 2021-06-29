@@ -80,8 +80,7 @@ public class RoleServiceImpl implements RoleService{
 
 	@Override
 	public void deleteRoleById(int id) {
-		// TODO Auto-generated method stub
-		
+		roleRepository.deleteById(id);		
 	}
 	
 	

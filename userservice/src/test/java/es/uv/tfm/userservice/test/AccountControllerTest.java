@@ -117,7 +117,7 @@ public class AccountControllerTest {
 	    
 	    mvc.perform(get("/account/user/" + username)
   	  	  .contentType(MediaType.APPLICATION_JSON).header("authorization", "Bearer " + token))
-  	      .andExpect(status().isFound())
+  	      .andExpect(status().isOk())
   	      .andExpect(jsonPath("$.id", is(user.getId())));
 	}
 	

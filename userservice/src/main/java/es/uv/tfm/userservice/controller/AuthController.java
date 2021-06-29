@@ -73,6 +73,7 @@ public class AuthController {
 		} catch (BadCredentialsException e) {
 			throw new Exception("Incorrect username or password", e);
 		} catch (ResourceNotFoundException ex) {
+			System.out.println("NOT Found");
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
 		} catch (AuthenticationException ex) {
 			System.out.println("AuthenticationException 2");

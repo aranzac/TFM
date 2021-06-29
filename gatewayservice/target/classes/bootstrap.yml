@@ -22,3 +22,5 @@ management:
           - env
           - health
           - info
+
+          

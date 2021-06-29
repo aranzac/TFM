@@ -60,19 +60,24 @@ public class AccountController {
 	}
 
 	// Se comprueba que el usuario del token coincida con el usuario que se pide
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-	@ResponseStatus(HttpStatus.FOUND)
+//	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+	@ResponseStatus(HttpStatus.OK)
 	@GetMapping("/user/{user}")
 	public User getAccountByUsername(HttpServletRequest httpServletRequest, @PathVariable("user") String user) {
 
+		System.out.println("getAccountByUsername");
 		String jwt = httpServletRequest.getHeader("authorization");
+		System.out.println("jwt " + jwt);
+
 
 		String username = getUserFromToken(jwt);
+		System.out.println("username " + username);
+
 		
 		if(httpServletRequest.isUserInRole("ROLE_ADMIN") || username.equals(user)) {
+			System.out.println("user " + user);
 
 			try {
-				
 				return userService.findByUsername(user);
 			}catch(ResourceNotFoundException ex) {
 
@@ -81,7 +86,6 @@ public class AccountController {
 		}
 		else if(!httpServletRequest.isUserInRole("ROLE_ADMIN")&& !username.equals(user)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "El usuario no tiene los permisos necesarios");
-
 		}
 		
 		
@@ -139,15 +143,17 @@ public class AccountController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{id}")
 	public void deleteUserById(HttpServletRequest httpServletRequest, @PathVariable("id") int id) {
-
+		System.out.println("deleteUserById");
 		try {
 			User user = userService.findById(id);
+
 			String userToken = getUserFromToken(httpServletRequest.getHeader("authorization"));
-			if (userToken.equals(user.getUsername())) {
+	
+			if (userToken.equals(user.getUsername()) || httpServletRequest.isUserInRole("ADMIN")) {
 				userService.deleteUser(userService.findById(id));
 			}
 			else {
-				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Register used is same as token user");
+				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Register user must be the same as token user");
 			}
 		} catch (ResourceNotFoundException ex) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found");
