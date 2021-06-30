@@ -35,6 +35,7 @@ public class GraphServiceTest {
 	@MockBean
 	private GraphRepository graphRepository;
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	public <T> void getGraphsTest() {
 		List<T> data = new ArrayList<T>();
@@ -50,6 +51,8 @@ public class GraphServiceTest {
 		when(graphRepository.findAll()).thenReturn(allGraphs);
 		assertEquals(2, graphService.getGraphs().size());
 	}
+	
+	
 	
 	@Test
 	public <T> void saveGraphTest() {
